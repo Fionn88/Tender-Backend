@@ -9,7 +9,7 @@ main.use(bodyParser.urlencoded({ extended: true }));
 
 const mysql = require('mysql');
 const connection = mysql.createConnection({
-    host: '192.168.22.21',
+    host: '127.0.0.1',
     user: 'DevAuth',
     password: 'Dev127336',
     database: 'DevDb',
