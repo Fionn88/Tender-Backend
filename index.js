@@ -1,6 +1,8 @@
 const express = require('express')
 const port = process.env.PORT || 3000
 const bodyParser = require('body-parser')
+const dotenv = require('dotenv');
+dotenv.config();
 const address = process.env.IP
 
 const main = express()
