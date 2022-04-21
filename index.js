@@ -27,6 +27,10 @@ main.listen(port, () => {
   console.log('The server is running at http://' + address + ":" + port)
 })
 
+main.get('/', async (req, res) => {
+  res.json({ status: "Welcome!! You Start Successfully" })
+})
+
 let tenders = [
   {
     id: "NCHC-P-106104",
@@ -99,15 +103,15 @@ main.post('/createCertificate', async (req, res) => {
   console.log("amount: " + amount)
   console.log("status: " + status)
 
-  console.log("queryBefore")
 
-  connection.query("SELECT id FROM DevDb.tag_number WHERE tenderId = ?", [tenderid], (error, results, fields) => {
+  //根據系統日期和標案號查詢，查詢最新的一筆，是否有憑證，如沒有，流水號直接是 00001，如有就會加一（看 else）
+  connection.query("SELECT id FROM DevDb.tag_number WHERE tenderId = ? AND time = ? ORDER BY num DESC LIMIT 1", [tenderid, date], (error, results, fields) => {
     if (error) throw error;
     if (results == null || results == '' || results == undefined) {
       var serialNumber = '00001'
       console.log('results == null')
       var id = tenderid + date + serialNumber
-      connection.query(`INSERT INTO DevDb.tag_number(id, tenderid, name) VALUES ('${id}', '${tenderid}', '${name}')`, function (err, results) {
+      connection.query(`INSERT INTO DevDb.tag_number(id, tenderid, name, time) VALUES ('${id}', '${tenderid}', '${name}', '${date}')`, function (err, results) {
         if (err) throw err;
 
 
@@ -121,8 +125,38 @@ main.post('/createCertificate', async (req, res) => {
         })
       })
     }else{
-      //如果 SELECT的出東西做處理，必須抓得到result，並且做抓最新的值，並判斷 其中的日期，如系統日期跟值不一樣，流水號必須重來00001
-      console.log(results)
+      //抓取ID流水號
+
+      var string = JSON.stringify(results);
+      var obj = JSON.parse(string);
+      var serialNumber = obj[0]["id"].substr(obj.length - 6);
+
+      var num = parseInt(serialNumber, 10)
+
+      // Method 2 -------> num = numInt
+      // var numString = serialNumber.substring(serialNumber.lastIndexOf('0')+ 1, serialNumber.length)
+      // var numInt = parseInt(numString, 10)
+      
+      console.log("num: "+num)
+      num++;
+      var numString = num.toString().padStart(5, "0");
+      console.log(numString)
+      var id = tenderid + date + numString
+      connection.query(`INSERT INTO DevDb.tag_number(id, tenderid, name, time) VALUES ('${id}', '${tenderid}', '${name}', '${date}')`, function (err, results) {
+        if (err) throw err;
+
+
+        console.log("1 record inserted tag_number.");
+        connection.query(`INSERT INTO DevDb.certificate(id, tenderid, accountCode, account, name, currency, branch, amount, status) VALUES ('${id}', '${tenderid}', '${accountCode}','${account}','${name}','${currency}','${branch}','${amount}','${status}')`, function (err, results) {
+          if (err) throw err;
+
+          res.json({ status: "Ture", message: "1 record inserted." })
+          console.log("1 record inserted certificate.");
+
+        })
+      })
+      
+   
     }
   })
 
