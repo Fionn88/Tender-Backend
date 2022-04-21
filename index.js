@@ -1,6 +1,7 @@
 const express = require('express')
 const port = process.env.PORT || 3000
 const bodyParser = require('body-parser')
+const dotenv = require('dotenv');
 dotenv.config();
 const address = process.env.IP
 
@@ -73,21 +74,38 @@ main.get('/tenderquery', async (req, res) => {
   })
 })
 
-main.get('/createCertificate', async (req, res) => {
-    // var tenderid = req.body.tenderid;
-    // var accountCode = req.body.accountCode;
-    // var account = req.body.account;
-    // var name = req.body.name;
-    // var currency = req.body.currency;
-    // var branch = req.body.branch;
-    // var amount = req.body.amount;
-    // var status = '已繳交押標金'
+main.post('/createCertificate', async (req, res) => {
+  var tenderid = req.body.tenderid;
+  var accountCode = req.body.accountCode;
+  var account = req.body.account;
+  var name = req.body.name;
+  var currency = req.body.currency;
+  var branch = req.body.branch;
+  var amount = req.body.amount;
+  var status = '已繳交押標金'
 
-    var serialNumber = 1
-    var today = new Date();
-    var year = today.getFullYear()
-    var month = (today.getMonth()+1).toString().replace(/ /g,'').padStart(2, '0')
-    var day = today.getDate().toString().replace(/ /g,'').padStart(2, '0');
-    res.json(year+month+day)
+  var serialNumber = 1
+  var today = new Date();
+  var year = today.getFullYear()
+  var month = (today.getMonth()+1).toString().replace(/ /g,'').padStart(2, '0')
+  var day = today.getDate().toString().replace(/ /g,'').padStart(2, '0');
+
+  console.log("tenderid: "+tenderid)
+  console.log("accountCode: "+accountCode)
+  console.log("account: "+account)
+  console.log("name: "+name)
+  console.log("currency: "+currency)
+  console.log("branch: "+branch)
+  console.log("amount: "+amount)
+  console.log("status: "+status)
+//   connection.query("SELECT id FROM DevDb.tag_number WHERE tenderId = ?",[tenderid], (error, results, fields)=> {
+//     console.log(results);
+//     if (results == null || results == '' || results == undefined) {
+//       var serialNumber = 1
+//       console.log('results == null')
+      
+//   } 
+// })
+
 })
 
