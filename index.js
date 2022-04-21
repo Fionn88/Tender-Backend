@@ -3,7 +3,6 @@ const port = process.env.PORT || 3000
 const bodyParser = require('body-parser')
 dotenv.config();
 const address = process.env.IP
-const address = process.env.IP
 
 const main = express()
 main.use(bodyParser.json());
