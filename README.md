@@ -46,6 +46,10 @@ Mac:
 
 > `npm start`
 
+```
+如失敗，可能是沒有開資料庫，請注意報錯的行數
+```
+
 ### 6. 測試你的API
 
 > `http://localhost:3000/tender`
@@ -55,3 +59,18 @@ Mac:
 ```
 
 ### 7. 測試你的資料庫
+
+> `http://localhost:3000/tenderquery`
+
+```
+如你可以看得到資料，代表你資料庫沒問題
+```
+
+### 8. 測試你的 POST 功能
+
+```
+請下載 POSTMAN，無法透過點連結去確認服務是否正常
+```
+
+> `http://localhost:3000/createCertificate`
+
