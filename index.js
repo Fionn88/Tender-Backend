@@ -74,3 +74,21 @@ main.get('/tenderquery', async (req, res) => {
   })
 })
 
+main.get('/createCertificate', async (req, res) => {
+    // var tenderid = req.body.tenderid;
+    // var accountCode = req.body.accountCode;
+    // var account = req.body.account;
+    // var name = req.body.name;
+    // var currency = req.body.currency;
+    // var branch = req.body.branch;
+    // var amount = req.body.amount;
+    // var status = '已繳交押標金'
+
+    var serialNumber = 1
+    var today = new Date();
+    var year = today.getFullYear()
+    var month = (today.getMonth()+1).toString().replace(/ /g,'').padStart(2, '0')
+    var day = today.getDate().toString().replace(/ /g,'').padStart(2, '0');
+    res.json(year+month+day)
+})
+
