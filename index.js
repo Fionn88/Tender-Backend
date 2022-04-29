@@ -9,7 +9,7 @@ const main = express()
 main.use(bodyParser.json());
 main.use(bodyParser.urlencoded({ extended: true }));
 
-main.use(function(req, res, next) {
+main.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -97,7 +97,7 @@ main.post('/createCertificate', async (req, res) => {
 
         })
       })
-    }else{
+    } else {
       //抓取ID流水號
 
       var string = JSON.stringify(results);
@@ -109,8 +109,8 @@ main.post('/createCertificate', async (req, res) => {
       // Method 2 -------> num = numInt
       // var numString = serialNumber.substring(serialNumber.lastIndexOf('0')+ 1, serialNumber.length)
       // var numInt = parseInt(numString, 10)
-      
-      console.log("num: "+num)
+
+      console.log("num: " + num)
       num++;
       var numString = num.toString().padStart(5, "0");
       console.log(numString)
@@ -128,11 +128,58 @@ main.post('/createCertificate', async (req, res) => {
 
         })
       })
-      
-   
     }
   })
-
 })
 
 
+main.post('/createCertificateMuti', async (req, res) => {
+  var data = req.body.data;
+  var tenderid = req.body.data[0].tenderid
+
+  var today = new Date();
+  var year = today.getFullYear()
+  var month = (today.getMonth() + 1).toString().replace(/ /g, '').padStart(2, '0')
+  var day = today.getDate().toString().replace(/ /g, '').padStart(2, '0');
+  var date = year + month + day
+
+
+  for (let i = 0; i < data.length; i++) {
+    console.log(data[i].tenderid)
+
+  }
+
+  connection.query("SELECT id FROM DevDb.tag_number WHERE tenderId = ? AND time = ? ORDER BY num DESC LIMIT 1", [tenderid, date], (error, results, fields) => {
+    if (error) throw error;
+
+    if (results == null || results == '' || results == undefined) {
+      if (data.length = 1) {
+        var serialNumber = '00001'
+        var id = tenderid + date + serialNumber
+        connection.query(`INSERT INTO DevDb.tag_number(id, tenderid, name, time) VALUES ('${id}', '${tenderid}', '${name}', '${date}')`, function (err, results) {
+          if (err) throw err;
+
+
+          console.log("1 record inserted tag_number.");
+          connection.query(`INSERT INTO DevDb.certificate(id, tenderid, accountCode, account, name, currency, branch, amount, status) VALUES ('${id}', '${tenderid}', '${accountCode}','${account}','${name}','${currency}','${branch}','${amount}','${status}')`, function (err, results) {
+            if (err) throw err;
+
+            res.json({ status: "Ture", message: "1 record inserted." })
+            console.log("1 record inserted certificate.");
+
+          })
+        })
+
+      }else if(data.length > 1){
+
+      }
+    }
+
+
+    res.json({ status: "Ture", message: "1 record inserted." })
+    console.log("1 record inserted certificate.");
+
+  })
+
+
+})
