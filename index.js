@@ -143,19 +143,31 @@ main.post('/createCertificateMuti', async (req, res) => {
   var day = today.getDate().toString().replace(/ /g, '').padStart(2, '0');
   var date = year + month + day
 
+  var status = '已繳交押標金'
 
-  for (let i = 0; i < data.length; i++) {
-    console.log(data[i].tenderid)
+  console.log(data)
 
-  }
 
   connection.query("SELECT id FROM DevDb.tag_number WHERE tenderId = ? AND time = ? ORDER BY num DESC LIMIT 1", [tenderid, date], (error, results, fields) => {
     if (error) throw error;
 
     if (results == null || results == '' || results == undefined) {
-      if (data.length = 1) {
+      console.log("results == null || results == '' || results == undefined")
+      console.log(data.length)
+
+
+      if (data.length == 1) {
+        console.log("data.length = 1")
+
         var serialNumber = '00001'
         var id = tenderid + date + serialNumber
+        var name = data[0].name
+        var currency = data[0].currency;
+        var branch = data[0].branch;
+        var amount = data[0].amount;
+        var accountCode = data[0].accountCode;
+        var account = data[0].account;
+
         connection.query(`INSERT INTO DevDb.tag_number(id, tenderid, name, time) VALUES ('${id}', '${tenderid}', '${name}', '${date}')`, function (err, results) {
           if (err) throw err;
 
@@ -170,15 +182,113 @@ main.post('/createCertificateMuti', async (req, res) => {
           })
         })
 
-      }else if(data.length > 1){
+      } else if (data.length > 1) {
+        console.log("data.length > 1")
+        for (let i = 0; i < data.length; i++) {
+          // console.log(data[i].tenderid)
+          i++
+          var num = parseInt(i, 10)
+          var numString = num.toString().padStart(5, "0");
+          console.log(numString)
+          var id = tenderid + date + numString
+          var name = data[i].name;
+          var currency = data[i].currency;
+          var branch = data[i].branch;
+          var amount = data[i].amount;
+          var accountCode = data[i].accountCode;
+          var account = data[i].account;
+          connection.query(`INSERT INTO DevDb.tag_number(id, tenderid, name, time) VALUES ('${id}', '${tenderid}', '${name}', '${date}')`, function (err, results) {
+            if (err) throw err;
+
+
+            console.log("1 record inserted tag_number.");
+            connection.query(`INSERT INTO DevDb.certificate(id, tenderid, accountCode, account, name, currency, branch, amount, status) VALUES ('${id}', '${tenderid}', '${accountCode}','${account}','${name}','${currency}','${branch}','${amount}','${status}')`, function (err, results) {
+              if (err) throw err;
+
+              // console.log("1 record inserted certificate.");
+              if(i == data.length - 1){
+                console.log("i == data.length - 1")
+                res.json({ status: "Ture", message: "1 record inserted." })
+              }
+              
+              
+            })
+          })
+
+        }
+
 
       }
+    } else {
+      if (data.length == 1) {
+
+        var string = JSON.stringify(results);
+        var obj = JSON.parse(string);
+        var serialNumber = obj[0]["id"].substr(obj.length - 6);
+
+        var num = parseInt(serialNumber, 10)
+        console.log("num: " + num)
+        num++;
+        var numString = num.toString().padStart(5, "0");
+        console.log(numString)
+        var id = tenderid + date + numString
+        connection.query(`INSERT INTO DevDb.tag_number(id, tenderid, name, time) VALUES ('${id}', '${tenderid}', '${name}', '${date}')`, function (err, results) {
+          if (err) throw err;
+
+
+          console.log("1 record inserted tag_number.");
+          connection.query(`INSERT INTO DevDb.certificate(id, tenderid, accountCode, account, name, currency, branch, amount, status) VALUES ('${id}', '${tenderid}', '${accountCode}','${account}','${name}','${currency}','${branch}','${amount}','${status}')`, function (err, results) {
+            if (err) throw err;
+
+            res.json({ status: "Ture", message: "1 record inserted." })
+            console.log("1 record inserted certificate.");
+
+          })
+        })
+
+      } else if (data.length > 1) {
+
+        for (let i = 0; i < data.length; i++) {
+          console.log(data[i].tenderid)
+          var string = JSON.stringify(results);
+          var obj = JSON.parse(string);
+          var serialNumber = obj[i]["id"].substr(obj.length - 6);
+
+          console.log("serialNumber: "+serialNumber)
+
+          var num = parseInt(serialNumber, 10)
+          console.log("num: " + num)
+          num++;
+          var numString = num.toString().padStart(5, "0");
+          console.log(numString)
+          var id = tenderid + date + numString
+          var name = data[i].name
+          var currency = data[i].currency;
+          var branch = data[i].branch;
+          var amount = data[i].amount;
+          var accountCode = data[i].accountCode;
+          var account = data[i].account;
+          console.log("accountCode: "+ accountCode)
+          connection.query(`INSERT INTO DevDb.tag_number(id, tenderid, name, time) VALUES ('${id}', '${tenderid}', '${name}', '${date}')`, function (err, results) {
+            if (err) throw err;
+
+
+            console.log("1 record inserted tag_number.");
+            connection.query(`INSERT INTO DevDb.certificate(id, tenderid, accountCode, account, name, currency, branch, amount, status) VALUES ('${id}', '${tenderid}', '${accountCode}','${account}','${name}','${currency}','${branch}','${amount}','${status}')`, function (err, results) {
+              if (err) throw err;
+
+              res.json({ status: "Ture", message: "1 record inserted." })
+              console.log("1 record inserted certificate.");
+
+            })
+          })
+
+        }
+
+
+      }
+
     }
-
-
-    res.json({ status: "Ture", message: "1 record inserted." })
-    console.log("1 record inserted certificate.");
-
   })
 
 
