@@ -135,7 +135,8 @@ main.post('/createCertificate', async (req, res) => {
 
 main.post('/createCertificateMuti', async (req, res) => {
   var data = req.body.data;
-  var tenderid = req.body.data[0].tenderid
+  var tenderid = req.body.data[0].tendersID
+  console.log(data)
 
   var today = new Date();
   var year = today.getFullYear()
@@ -161,10 +162,10 @@ main.post('/createCertificateMuti', async (req, res) => {
         var serialNumber = '00001'
         var id = tenderid + date + serialNumber
         var name = data[0].name
-        var currency = data[0].currency;
-        var branch = data[0].branch;
+        var currency = data[0].accountCurrecy;
+        var branch = data[0].branchName;
         var amount = data[0].amount;
-        var accountCode = data[0].accountCode;
+        var accountCode = data[0].code;
         var account = data[0].account;
 
         connection.query(`INSERT INTO DevDb.tag_number(id, tenderid, name, time) VALUES ('${id}', '${tenderid}', '${name}', '${date}')`, function (err, results) {
@@ -188,10 +189,10 @@ main.post('/createCertificateMuti', async (req, res) => {
           var numString = num.toString().padStart(5, "0");
           var id = tenderid + date + numString
           var name = data[i - 1].name;
-          var currency = data[i - 1].currency;
-          var branch = data[i - 1].branch;
+          var currency = data[i - 1].accountCurrecy;
+          var branch = data[i - 1].branchName;
           var amount = data[i - 1].amount;
-          var accountCode = data[i - 1].accountCode;
+          var accountCode = data[i - 1].code;
           var account = data[i - 1].account;
 
           connection.query(`INSERT INTO DevDb.tag_number(id, tenderid, name, time) VALUES ('${id}', '${tenderid}', '${name}', '${date}')`, function (err, results) {
@@ -260,9 +261,9 @@ main.post('/createCertificateMuti', async (req, res) => {
           var id = tenderid + date + numString
           var name = data[i - 1].name
           var currency = data[i - 1].currency;
-          var branch = data[i - 1].branch;
+          var branch = data[i - 1].branchName;
           var amount = data[i - 1].amount;
-          var accountCode = data[i - 1].accountCode;
+          var accountCode = data[i - 1].code;
           var account = data[i - 1].account;
           console.log("accountCode: "+ accountCode)
           connection.query(`INSERT INTO DevDb.tag_number(id, tenderid, name, time) VALUES ('${id}', '${tenderid}', '${name}', '${date}')`, function (err, results) {
